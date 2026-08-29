@@ -1,0 +1,18 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TaskController;
+
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+Route::get('tasks/export', [TaskController::class, 'export'])->name('tasks.export');
+Route::get('tasks/list', [TaskController::class, 'list'])->name('tasks.list');
+Route::resource('tasks', TaskController::class);
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::view('dashboard', 'dashboard')->name('dashboard');
+});
+
+require __DIR__.'/settings.php';
