@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -20,8 +21,8 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Test User', 'password' => bcrypt('password')]
         );
 
-        if (\App\Models\Task::count() === 0) {
-            \App\Models\Task::create([
+        if (Task::count() === 0) {
+            Task::create([
                 'title' => 'Design System & UI Components',
                 'description' => 'Finalize typography, color tokens, and responsive layout for the core dashboard.',
                 'assigned_to' => 'Ramim',
@@ -30,7 +31,7 @@ class DatabaseSeeder extends Seeder
                 'due_date' => now()->subDays(2),
             ]);
 
-            \App\Models\Task::create([
+            Task::create([
                 'title' => 'API Integration & Authentication',
                 'description' => 'Set up database schema, migrations, and session management.',
                 'assigned_to' => 'Sarah Connor',
@@ -39,7 +40,7 @@ class DatabaseSeeder extends Seeder
                 'due_date' => now()->subDays(1),
             ]);
 
-            \App\Models\Task::create([
+            Task::create([
                 'title' => 'Implement Status Distribution Pie Chart',
                 'description' => 'Integrate Chart.js to visually display task progress and metrics on dashboard.',
                 'assigned_to' => 'Ramim',
@@ -48,7 +49,7 @@ class DatabaseSeeder extends Seeder
                 'due_date' => now(),
             ]);
 
-            \App\Models\Task::create([
+            Task::create([
                 'title' => 'Quarterly Performance Review Report',
                 'description' => 'Compile team task delivery stats and export metrics for office review.',
                 'assigned_to' => 'Alex Miller',
@@ -57,7 +58,7 @@ class DatabaseSeeder extends Seeder
                 'due_date' => now()->addDays(2),
             ]);
 
-            \App\Models\Task::create([
+            Task::create([
                 'title' => 'Server Security Audit & Backup Strategy',
                 'description' => 'Review file permissions, SQLite backup configuration, and error logging.',
                 'assigned_to' => 'David Kim',
@@ -66,7 +67,7 @@ class DatabaseSeeder extends Seeder
                 'due_date' => now()->addDays(5),
             ]);
 
-            \App\Models\Task::create([
+            Task::create([
                 'title' => 'Legacy System Data Migration',
                 'description' => 'Migrate archived project records into the task tracker system.',
                 'assigned_to' => 'Elena Rostova',
