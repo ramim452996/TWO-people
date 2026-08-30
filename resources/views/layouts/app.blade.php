@@ -198,14 +198,7 @@
                         <span>Tasks</span>
                     </a>
 
-                    {{-- Menu 4: Adminer (DB) --}}
-                    <a href="{{ route('adminer') }}"
-                       target="_blank"
-                       title="Open SQLite Database in Adminer"
-                       class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50">
-                        <i class="fas fa-database text-xs text-indigo-500"></i>
-                        <span>Adminer</span>
-                    </a>
+                    
                 </div>
 
                 {{-- Right Controls --}}
