@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 use App\Models\Task;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TaskController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $query = Task::query();
 
@@ -17,7 +19,7 @@ class TaskController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('assigned_to', 'like', "%{$search}%");
+                    ->orWhere('assigned_to', 'like', "%{$search}%");
             });
         }
 
@@ -46,8 +48,8 @@ class TaskController extends Controller
         $tasks = $query->latest()->paginate(config('office.tasks_per_page', 10))->withQueryString();
 
         // Bonus Features Logic (Section 17)
-        $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
-        
+        $completionRate = $totalTasks > 0 ? (int) round(($completedTasks / $totalTasks) * 100) : 0;
+
         $dueSoonTasks = Task::where('status', '!=', 'Completed')
             ->whereNotNull('due_date')
             ->whereBetween('due_date', [now()->startOfDay(), now()->addDays(3)->endOfDay()])
@@ -67,12 +69,12 @@ class TaskController extends Controller
         ));
     }
 
-    public function create()
+    public function create(): View
     {
         return view('tasks.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -91,17 +93,17 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
     }
 
-    public function show(Task $task)
+    public function show(Task $task): View
     {
         return view('tasks.show', compact('task'));
     }
 
-    public function edit(Task $task)
+    public function edit(Task $task): View
     {
         return view('tasks.edit', compact('task'));
     }
 
-    public function update(Request $request, Task $task)
+    public function update(Request $request, Task $task): RedirectResponse
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -120,55 +122,57 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
 
-    public function destroy(Task $task)
+    public function destroy(Task $task): RedirectResponse
     {
         $task->delete();
 
         return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
     }
 
-    public function export()
+    public function export(): StreamedResponse
     {
-        if (!config('office.enable_task_export')) {
+        if (! config('office.enable_task_export')) {
             abort(403, 'Task export is disabled.');
         }
 
         $tasks = Task::latest()->get();
 
         $headers = [
-            'Content-type'        => 'text/csv',
+            'Content-type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename=tasks.csv',
-            'Pragma'              => 'no-cache',
-            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
-            'Expires'             => '0'
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
         ];
 
         $columns = ['ID', 'Title', 'Description', 'Assigned To', 'Priority', 'Status', 'Due Date', 'Created At'];
 
-        $callback = function() use($tasks, $columns) {
+        $callback = function () use ($tasks, $columns) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
+            if ($file !== false) {
+                fputcsv($file, $columns);
 
-            foreach ($tasks as $task) {
-                fputcsv($file, [
-                    $task->id,
-                    $task->title,
-                    $task->description,
-                    $task->assigned_to,
-                    $task->priority,
-                    $task->status,
-                    $task->due_date ? $task->due_date->format('Y-m-d') : '',
-                    $task->created_at->format('Y-m-d H:i:s'),
-                ]);
+                foreach ($tasks as $task) {
+                    fputcsv($file, [
+                        $task->id,
+                        $task->title,
+                        $task->description,
+                        $task->assigned_to,
+                        $task->priority,
+                        $task->status,
+                        $task->due_date ? $task->due_date->format('Y-m-d') : '',
+                        $task->created_at ? $task->created_at->format('Y-m-d H:i:s') : '',
+                    ]);
+                }
+
+                fclose($file);
             }
-
-            fclose($file);
         };
 
         return response()->stream($callback, 200, $headers);
     }
 
-    public function list(Request $request)
+    public function list(Request $request): View
     {
         $query = Task::query();
 
@@ -177,7 +181,7 @@ class TaskController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('assigned_to', 'like', "%{$search}%");
+                    ->orWhere('assigned_to', 'like', "%{$search}%");
             });
         }
 

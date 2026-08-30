@@ -10,4 +10,8 @@ parameters:
         - database/
         - routes/
 
+    excludePaths:
+        - app/Http/Controllers/AdminerController.php
+        - resources/adminer/*
+
     level: 7
