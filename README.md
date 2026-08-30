@@ -105,5 +105,12 @@ php artisan test
 
 ---
 
+## 👥 Contributors
+
+- **[RAMIM](https://github.com/ramim452996)** (`ramim452996@gmail.com`)
+- **[Akash Kumar](https://github.com/akashkumarkundu)** (`akashkumarkundu2102121@gmail.com`)
+
+---
+
 ## 📄 License
 Open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
