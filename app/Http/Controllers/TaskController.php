@@ -37,12 +37,16 @@ class TaskController extends Controller
         $completedTasks = Task::where('status', 'Completed')->count();
         $highPriorityTasks = Task::where('priority', 'High')->count();
 
+        // Overdue tasks count (not completed and past due date)
+        $overdueTasks = Task::where('status', '!=', 'Completed')
+            ->whereNotNull('due_date')
+            ->where('due_date', '<', now()->startOfDay())
+            ->count();
+
         $tasks = $query->latest()->paginate(config('office.tasks_per_page', 10))->withQueryString();
 
         // Bonus Features Logic (Section 17)
         $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
-        
-        $recentTasks = Task::latest()->take(5)->get();
         
         $dueSoonTasks = Task::where('status', '!=', 'Completed')
             ->whereNotNull('due_date')
@@ -57,8 +61,8 @@ class TaskController extends Controller
             'inProgressTasks',
             'completedTasks',
             'highPriorityTasks',
+            'overdueTasks',
             'completionRate',
-            'recentTasks',
             'dueSoonTasks'
         ));
     }

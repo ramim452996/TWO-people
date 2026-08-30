@@ -176,142 +176,264 @@
 @endif
 
 {{-- ============================================================
-     RECENT TASKS (full width)
+     PIE CHART & TASK STATUS METRICS (Replaces Recent Tasks)
 ============================================================ --}}
-<div class="rounded-2xl overflow-hidden border shadow-sm transition-colors duration-200
+<div class="rounded-3xl border shadow-sm transition-all duration-300 p-6 sm:p-8
             border-gray-100 dark:border-gray-700/60
-            bg-white dark:bg-gray-800/80">
+            bg-white dark:bg-gray-800/90 backdrop-blur-md">
 
     {{-- Header --}}
-    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700/60">
-        <h2 class="text-base font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <i class="fas fa-history text-purple-500"></i> Recent Tasks
-            <span class="text-xs font-semibold px-2 py-0.5 rounded-full
-                         bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400">
-                Latest 5
-            </span>
-        </h2>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-100 dark:border-gray-700/60">
+        <div>
+            <h2 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2.5">
+                <i class="fas fa-chart-pie text-indigo-500"></i> Task Status Distribution
+            </h2>
+            <p class="text-xs sm:text-sm text-gray-400 dark:text-gray-500 mt-0.5">
+                Real-time visual breakdown of task progress and health.
+            </p>
+        </div>
         <a href="{{ route('tasks.list') }}"
-           class="text-xs font-semibold text-indigo-500 dark:text-indigo-400 hover:underline flex items-center gap-1">
-            View all <i class="fas fa-arrow-right text-[10px]"></i>
+           class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors self-start sm:self-auto">
+            <span>Manage in Tasks</span>
+            <i class="fas fa-arrow-right text-[10px]"></i>
         </a>
     </div>
 
-    {{-- Task Rows --}}
-    <ul class="divide-y divide-gray-50 dark:divide-gray-700/50">
-        @forelse($recentTasks as $task)
-            @php $isOverdue = $task->due_date && $task->due_date->isPast() && $task->status !== 'Completed'; @endphp
-            <li class="group transition-colors duration-150
-                       {{ $isOverdue ? 'bg-red-50/40 dark:bg-red-900/10' : 'hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10' }}">
-                <a href="{{ route('tasks.show', $task) }}"
-                   class="flex flex-col sm:flex-row sm:items-center gap-3 px-6 py-4">
+    {{-- Grid Content: Chart on left, Detailed Metrics on right --}}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
 
-                    {{-- Avatar --}}
-                    <div class="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center text-sm font-bold
-                                bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-sm shadow-purple-500/20">
-                        {{ strtoupper(substr($task->assigned_to, 0, 1)) }}
-                    </div>
+        {{-- Left: The Canvas Chart --}}
+        <div class="lg:col-span-5 flex flex-col items-center justify-center relative">
+            <div class="relative w-64 h-64 sm:w-72 sm:h-72">
+                <canvas id="taskStatusPieChart"></canvas>
+            </div>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-3 flex items-center gap-1.5">
+                <i class="fas fa-info-circle text-indigo-400"></i> Hover or tap segments for details
+            </p>
+        </div>
 
-                    {{-- Title & Description --}}
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-gray-800 dark:text-white truncate
-                                  group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                            {{ $task->title }}
-                            @if($isOverdue)
-                                <span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold
-                                             bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800/60">
-                                    OVERDUE
-                                </span>
-                            @endif
-                        </p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">
-                            <i class="fas fa-user mr-1 opacity-60"></i>{{ $task->assigned_to }}
-                            <span class="mx-1.5 opacity-40">·</span>
-                            {{ $task->created_at->diffForHumans() }}
-                        </p>
-                    </div>
+        {{-- Right: Status Cards & Metrics Breakdown --}}
+        <div class="lg:col-span-7 space-y-3.5">
 
-                    {{-- Priority --}}
-                    <div class="flex-shrink-0">
-                        @if($task->priority === 'High')
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border
-                                         bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800/50">
-                                <i class="fas fa-arrow-up text-[9px]"></i> High
-                            </span>
-                        @elseif($task->priority === 'Medium')
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border
-                                         bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/50">
-                                <i class="fas fa-minus text-[9px]"></i> Medium
-                            </span>
-                        @else
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border
-                                         bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50">
-                                <i class="fas fa-arrow-down text-[9px]"></i> Low
-                            </span>
-                        @endif
+            {{-- 1. Completed (Green) --}}
+            <div class="p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between
+                        bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200/80 dark:border-emerald-800/40 hover:shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20">
+                        <i class="fas fa-check text-base"></i>
                     </div>
-
-                    {{-- Status --}}
-                    <div class="flex-shrink-0">
-                        @if($task->status === 'Completed')
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border
-                                         bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Completed
-                            </span>
-                        @elseif($task->status === 'In Progress')
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border
-                                         bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 border-sky-200 dark:border-sky-800/50">
-                                <span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></span> In Progress
-                            </span>
-                        @else
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border
-                                         bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-600">
-                                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Pending
-                            </span>
-                        @endif
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h4 class="text-sm font-bold text-gray-800 dark:text-white">Completed</h4>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Successfully finished tasks</p>
                     </div>
-
-                    {{-- Due Date --}}
-                    <div class="flex-shrink-0 text-xs {{ $isOverdue ? 'text-red-500 dark:text-red-400 font-semibold' : 'text-gray-400 dark:text-gray-500' }}">
-                        @if($task->due_date)
-                            <i class="fas fa-calendar-alt mr-1 opacity-60"></i>{{ $task->due_date->format('M d, Y') }}
-                        @else
-                            <span class="text-gray-300 dark:text-gray-600">No due date</span>
-                        @endif
-                    </div>
-
-                    {{-- Arrow --}}
-                    <i class="fas fa-chevron-right text-gray-300 dark:text-gray-600 text-xs flex-shrink-0
-                              group-hover:text-indigo-400 transition-colors hidden sm:block"></i>
-                </a>
-            </li>
-        @empty
-            <li class="px-6 py-14 text-center">
-                <div class="flex flex-col items-center gap-3 text-gray-400 dark:text-gray-500">
-                    <div class="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-700/50 flex items-center justify-center">
-                        <i class="fas fa-clipboard-list text-3xl text-gray-300 dark:text-gray-600"></i>
-                    </div>
-                    <p class="text-sm font-medium">No tasks yet.</p>
-                    <a href="{{ route('tasks.create') }}"
-                       class="text-xs text-indigo-500 dark:text-indigo-400 hover:underline">
-                        + Create your first task
-                    </a>
                 </div>
-            </li>
-        @endforelse
-    </ul>
+                <div class="text-right">
+                    <p class="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">{{ $completedTasks }}</p>
+                    <p class="text-xs font-medium text-gray-400 dark:text-gray-500">
+                        {{ $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0 }}%
+                    </p>
+                </div>
+            </div>
 
-    {{-- Footer --}}
-    @if($recentTasks->count() > 0)
-    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-700/20">
-        <a href="{{ route('tasks.list') }}"
-           class="flex items-center justify-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400
-                  hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
-            View all {{ $totalTasks }} tasks
-            <i class="fas fa-arrow-right text-xs"></i>
-        </a>
+            {{-- 2. Pending (Blue) --}}
+            <div class="p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between
+                        bg-blue-50/60 dark:bg-blue-950/20 border-blue-200/80 dark:border-blue-800/40 hover:shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center shadow-md shadow-blue-500/20">
+                        <i class="fas fa-clock text-base"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h4 class="text-sm font-bold text-gray-800 dark:text-white">Pending</h4>
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Awaiting action or in backlog</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-xl font-extrabold text-blue-600 dark:text-blue-400">{{ $pendingTasks }}</p>
+                    <p class="text-xs font-medium text-gray-400 dark:text-gray-500">
+                        {{ $totalTasks > 0 ? round(($pendingTasks / $totalTasks) * 100) : 0 }}%
+                    </p>
+                </div>
+            </div>
+
+            {{-- 3. Overdue (Red) --}}
+            <div class="p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between
+                        bg-rose-50/60 dark:bg-rose-950/20 border-rose-200/80 dark:border-rose-800/40 hover:shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-500 text-white flex items-center justify-center shadow-md shadow-red-500/20">
+                        <i class="fas fa-exclamation-triangle text-base"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h4 class="text-sm font-bold text-gray-800 dark:text-white">Overdue</h4>
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Tasks past their due date</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-xl font-extrabold text-red-600 dark:text-red-400">{{ $overdueTasks }}</p>
+                    <p class="text-xs font-medium text-gray-400 dark:text-gray-500">
+                        {{ $totalTasks > 0 ? round(($overdueTasks / $totalTasks) * 100) : 0 }}%
+                    </p>
+                </div>
+            </div>
+
+            {{-- 4. In Progress (Sky / Cyan Accent) --}}
+            @if($inProgressTasks > 0)
+            <div class="p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between
+                        bg-amber-50/60 dark:bg-amber-950/20 border-amber-200/80 dark:border-amber-800/40 hover:shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-md shadow-amber-500/20">
+                        <i class="fas fa-spinner text-base"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h4 class="text-sm font-bold text-gray-800 dark:text-white">In Progress</h4>
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Currently being worked on</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-xl font-extrabold text-amber-600 dark:text-amber-400">{{ $inProgressTasks }}</p>
+                    <p class="text-xs font-medium text-gray-400 dark:text-gray-500">
+                        {{ $totalTasks > 0 ? round(($inProgressTasks / $totalTasks) * 100) : 0 }}%
+                    </p>
+                </div>
+            </div>
+            @endif
+
+        </div>
+
     </div>
-    @endif
+
 </div>
+
+{{-- ============================================================
+     PIE CHART SCRIPT
+============================================================ --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var ctx = document.getElementById('taskStatusPieChart');
+    if (!ctx) return;
+
+    var overdueCount    = {{ $overdueTasks }};
+    var completedCount  = {{ $completedTasks }};
+    var pendingCount    = {{ $pendingTasks }};
+    var inProgressCount = {{ $inProgressTasks }};
+    var total           = {{ $totalTasks }};
+
+    // If no tasks exist, show a pleasant placeholder segment
+    var chartLabels = [];
+    var chartData   = [];
+    var chartColors = [];
+    var hoverColors = [];
+
+    if (total === 0) {
+        chartLabels = ['No Tasks Yet'];
+        chartData   = [1];
+        chartColors = ['#cbd5e1'];
+        hoverColors = ['#94a3b8'];
+    } else {
+        // Red for Overdue
+        if (overdueCount > 0) {
+            chartLabels.push('Overdue');
+            chartData.push(overdueCount);
+            chartColors.push('#ef4444');
+            hoverColors.push('#dc2626');
+        }
+
+        // Green for Completed
+        if (completedCount > 0) {
+            chartLabels.push('Completed');
+            chartData.push(completedCount);
+            chartColors.push('#22c55e');
+            hoverColors.push('#16a34a');
+        }
+
+        // Blue for Pending
+        if (pendingCount > 0) {
+            chartLabels.push('Pending');
+            chartData.push(pendingCount);
+            chartColors.push('#3b82f6');
+            hoverColors.push('#2563eb');
+        }
+
+        // In Progress (if any)
+        if (inProgressCount > 0) {
+            chartLabels.push('In Progress');
+            chartData.push(inProgressCount);
+            chartColors.push('#f59e0b');
+            hoverColors.push('#d97706');
+        }
+    }
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                data: chartData,
+                backgroundColor: chartColors,
+                hoverBackgroundColor: hoverColors,
+                borderWidth: 3,
+                borderColor: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '68%',
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        boxHeight: 12,
+                        borderRadius: 6,
+                        useBorderRadius: true,
+                        padding: 16,
+                        font: {
+                            family: 'Inter, sans-serif',
+                            size: 12,
+                            weight: '600'
+                        },
+                        color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#4b5563'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleFont: { family: 'Inter, sans-serif', size: 13, weight: 'bold' },
+                    bodyFont: { family: 'Inter, sans-serif', size: 12 },
+                    padding: 12,
+                    cornerRadius: 10,
+                    callbacks: {
+                        label: function (context) {
+                            if (total === 0) return 'No tasks created yet';
+                            var val = context.raw || 0;
+                            var pct = total > 0 ? Math.round((val / total) * 100) : 0;
+                            return ' ' + context.label + ': ' + val + ' (' + pct + '%)';
+                        }
+                    }
+                }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true,
+                duration: 1000,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+});
+</script>
 
 @endsection

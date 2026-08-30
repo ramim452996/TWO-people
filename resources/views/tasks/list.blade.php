@@ -10,7 +10,7 @@
         <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-1">
             <a href="{{ route('tasks.index') }}" class="hover:text-indigo-500 transition-colors">Dashboard</a>
             <i class="fas fa-chevron-right text-[10px]"></i>
-            <span class="text-gray-600 dark:text-gray-300 font-medium">Task List</span>
+            <span class="text-gray-600 dark:text-gray-300 font-medium">Tasks</span>
         </div>
         <h1 class="text-2xl font-extrabold text-gray-800 dark:text-white flex items-center gap-2">
             <i class="fas fa-list-check text-indigo-500"></i>

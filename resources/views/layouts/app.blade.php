@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +7,23 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = { darkMode: 'class' }
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
     </script>
+    <!-- Chart.js for Pie Charts and Visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         // Apply dark mode before render to avoid flash
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -21,11 +35,11 @@
     <style>
         /* ===== MOBILE VIEW SIMULATION ===== */
         body.mobile-view-active {
-            background-color: #0f172a;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 24px 0 40px;
+            background-color: #0f172a !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            padding: 24px 0 40px !important;
         }
         body.mobile-view-active .mobile-frame {
             width: 390px;
@@ -41,8 +55,9 @@
             background: white;
             transition: all 0.4s ease;
         }
-        body.dark.mobile-view-active .mobile-frame {
-            background: #111827;
+        body.dark.mobile-view-active .mobile-frame,
+        .dark body.mobile-view-active .mobile-frame {
+            background: #0f172a;
         }
         /* Notch */
         body.mobile-view-active .mobile-frame::before {
@@ -97,101 +112,112 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
             border: 1.5px solid;
             transition: all 0.2s ease;
             white-space: nowrap;
         }
         .view-toggle-btn.desktop-mode {
-            border-color: #e0e7ff;
-            background: #f5f3ff;
-            color: #4f46e5;
+            border-color: #c7d2fe;
+            background-color: #e0e7ff;
+            color: #3730a3;
         }
         .dark .view-toggle-btn.desktop-mode {
-            border-color: #3730a3;
-            background: #1e1b4b;
-            color: #a5b4fc;
+            border-color: #4338ca;
+            background-color: #1e1b4b;
+            color: #c7d2fe;
         }
         .view-toggle-btn.mobile-mode {
-            border-color: #bfdbfe;
-            background: #eff6ff;
-            color: #1d4ed8;
+            border-color: #93c5fd;
+            background-color: #dbeafe;
+            color: #1e40af;
         }
         .dark .view-toggle-btn.mobile-mode {
-            border-color: #1e40af;
-            background: #1e3a5f;
-            color: #93c5fd;
+            border-color: #1d4ed8;
+            background-color: #1e3a8a;
+            color: #bfdbfe;
         }
         .view-toggle-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(99,102,241,0.2);
+            box-shadow: 0 4px 12px rgba(99,102,241,0.25);
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200" id="app-body">
+<body class="font-sans bg-slate-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200" id="app-body">
 
     {{-- Mobile frame wrapper (only active when class is toggled) --}}
     <div class="mobile-frame" id="mobile-frame">
       <div class="mobile-frame-inner" id="mobile-frame-inner">
 
     {{-- ===== NAVBAR ===== --}}
-    <nav class="bg-white dark:bg-gray-800 shadow transition-colors duration-200" id="app-nav">
+    <nav class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100 dark:border-gray-700/60 transition-colors duration-200" id="app-nav">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-14">
-                {{-- Logo --}}
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('tasks.index') }}" class="flex items-center gap-2 text-lg font-bold text-indigo-600 dark:text-indigo-400">
-                        <div class="w-8 h-8 rounded-lg bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center shadow-sm">
+            <div class="flex flex-wrap justify-between items-center min-h-[4rem] py-2 gap-3">
+                {{-- Left: Logo + 3 Navigation Menus --}}
+                <div class="flex items-center flex-wrap gap-2 sm:gap-4">
+                    <a href="{{ route('home') }}" class="flex items-center gap-2.5 group mr-2">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-200">
                             <i class="fas fa-check-double text-white text-sm"></i>
                         </div>
-                        <span class="hidden sm:inline">{{ config('office.app_name', 'Office Task Tracker') }}</span>
+                        <span class="font-bold text-base tracking-tight text-gray-800 dark:text-white hidden md:inline">
+                            {{ config('office.app_name', 'Office Task Tracker') }}
+                        </span>
                     </a>
 
-                    {{-- Home Button --}}
+                    {{-- Menu 1: Homepage --}}
                     <a href="{{ route('home') }}"
-                       title="Back to Homepage"
-                       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200
-                              text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600
-                              hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400
-                              hover:border-indigo-300 dark:hover:border-indigo-700">
+                       class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200
+                              {{ request()->routeIs('home')
+                                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/30'
+                                    : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50' }}">
                         <i class="fas fa-home text-xs"></i>
-                        <span class="hidden md:inline">Home</span>
+                        <span>Homepage</span>
                     </a>
 
-                    {{-- Task List Button --}}
+                    {{-- Menu 2: Dashboard --}}
+                    <a href="{{ route('tasks.index') }}"
+                       class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200
+                              {{ request()->routeIs('tasks.index') && !request()->routeIs('tasks.list')
+                                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/30'
+                                    : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50' }}">
+                        <i class="fas fa-tachometer-alt text-xs"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    {{-- Menu 3: Tasks --}}
                     <a href="{{ route('tasks.list') }}"
-                       title="View All Tasks"
-                       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200
+                       class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200
                               {{ request()->routeIs('tasks.list')
-                                    ? 'bg-indigo-600 text-white border border-indigo-600'
-                                    : 'text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-700' }}">
-                        <i class="fas fa-list text-xs"></i>
-                        <span class="hidden md:inline">Task List</span>
+                                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/30'
+                                    : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50' }}">
+                        <i class="fas fa-list-check text-xs"></i>
+                        <span>Tasks</span>
                     </a>
                 </div>
 
                 {{-- Right Controls --}}
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2.5 ml-auto">
 
-                    {{-- View Toggle Button --}}
+                    {{-- View Toggle Button (Mobile/Desktop) --}}
                     <button id="view-toggle-btn" type="button"
                             class="view-toggle-btn desktop-mode"
                             title="Switch between mobile and desktop view">
                         <i id="view-toggle-icon" class="fas fa-mobile-alt"></i>
-                        <span id="view-toggle-label">Mobile View</span>
+                        <span id="view-toggle-label">Mobile</span>
                     </button>
 
                     {{-- Dark/Light Mode Toggle --}}
                     <button id="theme-toggle" type="button"
-                            class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 dark:text-gray-400
-                                   hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                            class="w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200
+                                   bg-gray-100 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600
+                                   text-gray-600 dark:text-amber-400 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer shadow-sm"
                             title="Toggle dark/light mode">
-                        <i id="theme-toggle-dark-icon" class="hidden fas fa-moon text-base"></i>
-                        <i id="theme-toggle-light-icon" class="hidden fas fa-sun text-base"></i>
+                        <i id="theme-toggle-dark-icon" class="fas fa-moon text-indigo-600 text-sm"></i>
+                        <i id="theme-toggle-light-icon" class="fas fa-sun text-amber-400 text-sm hidden"></i>
                     </button>
                 </div>
             </div>
