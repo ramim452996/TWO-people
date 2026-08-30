@@ -286,69 +286,56 @@
                     </div>
                 </div>
 
-                <!-- Right Visual -->
-                <div class="relative w-full h-[400px] md:h-[500px] hidden lg:block z-10">
-                    <div class="absolute inset-0 flex items-center justify-center float-anim">
-                        <!-- Glassmorphic UI Card -->
-                        <div class="w-full max-w-md h-auto rounded-2xl p-6 shadow-2xl relative
-                                    glass-light dark:glass-dark
-                                    border-t border-l border-white/80 dark:border-white/20
-                                    transition-all duration-500">
+                <!-- Right Visual: Luxury Corporate Office Showcase -->
+                <div class="relative w-full h-[450px] md:h-[520px] hidden lg:flex items-center justify-center z-10">
+                    <!-- Glow Backdrop -->
+                    <div class="absolute -inset-4 bg-gradient-to-r from-indigo-500/30 via-purple-500/20 to-blue-500/30 rounded-3xl blur-2xl opacity-70 animate-pulse"></div>
 
-                            <!-- Header pseudo -->
-                            <div class="flex justify-between items-center border-b border-gray-200 dark:border-white/10 pb-4 mb-6">
-                                <div class="w-28 h-4 bg-gray-200 dark:bg-white/20 rounded-md"></div>
-                                <div class="flex space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-blue-400/40 dark:bg-blue-500/50"></div>
-                                    <div class="w-8 h-8 rounded-full bg-purple-400/40 dark:bg-purple-500/50"></div>
+                    <!-- Glass Frame Container with Corporate Office Picture -->
+                    <div class="relative w-full max-w-lg rounded-3xl p-3 bg-white/40 dark:bg-gray-900/60 backdrop-blur-xl border border-white/60 dark:border-white/15 shadow-2xl transition-all duration-500 hover:shadow-indigo-500/25 float-anim group overflow-hidden">
+                        <!-- Image Container with Subtle Gradient Overlay -->
+                        <div class="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-inner">
+                            <img src="{{ asset('images/corporate-office.jpg') }}"
+                                 alt="ASTGD Modern Corporate Office"
+                                 class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out" />
+                            
+                            <!-- Ambient Gradient Overlay for Contrast -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-black/20 pointer-events-none"></div>
+
+                            <!-- Bottom Overlay Content -->
+                            <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between pointer-events-none">
+                                <div class="bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-xs font-semibold text-white">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    <span>ASTGD Corporate HQ</span>
+                                </div>
+                                <div class="bg-indigo-600/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-indigo-400/30 text-xs font-semibold text-white flex items-center gap-1.5 shadow-lg shadow-indigo-500/30">
+                                    <i class="fas fa-chart-line text-xs"></i>
+                                    <span>Live Productivity</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Stats pseudo -->
-                            <div class="grid grid-cols-2 gap-4 mb-6">
-                                <div class="h-20 rounded-xl border p-4
-                                            bg-indigo-50/80 border-indigo-100 dark:bg-white/5 dark:border-white/10
-                                            transition-colors duration-300">
-                                    <div class="w-12 h-3 bg-indigo-200 dark:bg-white/20 rounded mb-3"></div>
-                                    <div class="w-16 h-6 bg-indigo-400/70 dark:bg-blue-400/80 rounded"></div>
-                                </div>
-                                <div class="h-20 rounded-xl border p-4
-                                            bg-purple-50/80 border-purple-100 dark:bg-white/5 dark:border-white/10
-                                            transition-colors duration-300">
-                                    <div class="w-12 h-3 bg-purple-200 dark:bg-white/20 rounded mb-3"></div>
-                                    <div class="w-16 h-6 bg-purple-400/70 dark:bg-purple-400/80 rounded"></div>
-                                </div>
+                        <!-- Floating Glass Stat Badge 1 (Top Right) -->
+                        <div class="absolute -top-3 -right-3 px-4 py-2 rounded-2xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-indigo-200 dark:border-indigo-500/40 shadow-xl flex items-center gap-2.5 text-xs font-bold text-gray-800 dark:text-white"
+                             style="animation: float 5s ease-in-out infinite;">
+                            <div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs shadow-md">
+                                <i class="fas fa-bolt"></i>
                             </div>
-
-                            <!-- Task list pseudo -->
-                            <div class="space-y-3">
-                                <div class="h-12 rounded-lg flex items-center px-4
-                                            bg-green-50 dark:bg-white/10 border border-green-100 dark:border-transparent
-                                            transition-colors duration-300">
-                                    <div class="w-4 h-4 rounded-full bg-green-400 mr-4 flex-shrink-0"></div>
-                                    <div class="w-1/2 h-3 bg-gray-200 dark:bg-white/30 rounded"></div>
-                                </div>
-                                <div class="h-12 rounded-lg flex items-center px-4
-                                            bg-yellow-50 dark:bg-white/5 border border-yellow-100 dark:border-white/5
-                                            transition-colors duration-300">
-                                    <div class="w-4 h-4 rounded-full bg-yellow-400 mr-4 flex-shrink-0"></div>
-                                    <div class="w-2/3 h-3 bg-gray-200 dark:bg-white/20 rounded"></div>
-                                </div>
-                                <div class="h-12 rounded-lg flex items-center px-4
-                                            bg-red-50 dark:bg-white/5 border border-red-100 dark:border-white/5
-                                            transition-colors duration-300">
-                                    <div class="w-4 h-4 rounded-full bg-red-400 mr-4 flex-shrink-0"></div>
-                                    <div class="w-1/3 h-3 bg-gray-200 dark:bg-white/20 rounded"></div>
-                                </div>
+                            <div>
+                                <p class="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Status</p>
+                                <p class="text-indigo-600 dark:text-indigo-400 font-bold">100% Operational</p>
                             </div>
+                        </div>
 
-                            <!-- Floating rocket badge -->
-                            <div class="absolute -right-12 -bottom-10 w-32 h-32 rounded-full flex items-center justify-center
-                                        glass-light dark:glass-dark
-                                        shadow-lg border border-white/80 dark:border-white/20
-                                        transition-all duration-500"
-                                 style="animation: float 4s ease-in-out infinite reverse;">
-                                <i class="fas fa-rocket text-4xl text-purple-400 dark:text-purple-300"></i>
+                        <!-- Floating Glass Stat Badge 2 (Bottom Left) -->
+                        <div class="absolute -bottom-3 -left-3 px-4 py-2 rounded-2xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-purple-200 dark:border-purple-500/40 shadow-xl flex items-center gap-2.5 text-xs font-bold text-gray-800 dark:text-white"
+                             style="animation: float 4.5s ease-in-out infinite reverse;">
+                            <div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs shadow-md">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Team Sync</p>
+                                <p class="text-purple-600 dark:text-purple-400 font-bold">Active Collaboration</p>
                             </div>
                         </div>
                     </div>
