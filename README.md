@@ -20,14 +20,13 @@ Office Task Tracker helps teams organize, track, and manage everyday office task
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/ramim452996/New-folder.git
-cd New-folder
+git clone -b Ramim_yesterday https://github.com/ASTGD/office-task-manager.git
+cd office-task-manager
 ```
 
 ### 2. Install Dependencies
 ```bash
 composer install
-npm install && npm run build
 ```
 
 ### 3. Environment Configuration
@@ -40,32 +39,15 @@ Generate the application key:
 php artisan key:generate
 ```
 
-### 4. Configure Database
-In your `.env` file, configure your database connection:
-
-**For MySQL:**
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=office_task_tracker
-DB_USERNAME=root
-DB_PASSWORD=your_password
-```
-
-**For SQLite (Default local development):**
-```env
-DB_CONNECTION=sqlite
-```
-
-### 5. Run Database Migrations
-Run the migrations to create the database schema:
+### 4. Database Setup (Zero Config with SQLite)
+The application defaults to SQLite for instant, zero-configuration local setup.
+Run migrations and populate sample tasks:
 ```bash
-php artisan migrate
+php artisan migrate --seed
 ```
 
-### 6. Start the Application
-Run the local development server (or use Laravel Herd):
+### 5. Start the Application
+Run the local development server:
 ```bash
 php artisan serve
 ```
